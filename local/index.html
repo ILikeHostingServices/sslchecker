@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cert Decoder</title>
+<script src="./jsrsasign.js"></script>
+<style>
+  :root {
+    --bg: #0e1210;
+    --panel: #141a17;
+    --border: #2a332e;
+    --text: #d8ded9;
+    --muted: #7c8a82;
+    --accent: #5fb98c;
+    --warn: #c98a4b;
+    --mono: "SF Mono", "Consolas", "Menlo", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    margin: 0;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  h1 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--text);
+  }
+  .sub {
+    color: var(--muted);
+    margin: 0 0 20px 0;
+    font-size: 12px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+  textarea {
+    width: 100%;
+    height: 340px;
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    resize: vertical;
+    white-space: pre;
+  }
+  textarea::placeholder { color: var(--muted); }
+  button {
+    background: var(--accent);
+    color: #0e1210;
+    border: none;
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button:hover { opacity: 0.88; }
+  button.secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    margin-left: 8px;
+  }
+  .results { display: flex; flex-direction: column; gap: 10px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+  .card-title { font-weight: 600; }
+  .badge {
+    font-size: 11px;
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+  }
+  .badge.ca { color: var(--accent); border-color: var(--accent); }
+  .badge.leaf { color: var(--warn); border-color: var(--warn); }
+  .badge.key { color: #c9605e; border-color: #c9605e; }
+  .row { display: flex; gap: 8px; padding: 3px 0; }
+  .label { color: var(--muted); min-width: 110px; flex-shrink: 0; }
+  .val { word-break: break-all; }
+  .empty {
+    color: var(--muted);
+    padding: 40px 0;
+    text-align: center;
+    border: 1px dashed var(--border);
+  }
+  .note {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Cert Decoder</h1>
+<p class="sub">Runs entirely in this browser tab. Nothing here is sent anywhere. Paste a full .ovpn file, a single PEM cert, or several — it'll find and label every block.</p>
+
+<div class="layout">
+  <div>
+    <textarea id="input" placeholder="Paste .ovpn contents or one/more -----BEGIN CERTIFICATE----- blocks here..."></textarea>
+    <button onclick="parseInput()">Decode</button>
+    <button class="secondary" onclick="clearAll()">Clear</button>
+  </div>
+  <div class="results" id="results">
+    <div class="empty">Decoded certs will appear here</div>
+  </div>
+</div>
+
+<div class="note">
+  Private key blocks (-----BEGIN PRIVATE KEY----- / RSA PRIVATE KEY) are detected and flagged but never parsed or displayed — treat any file containing one as a secret.<br>
+  This is the fully local build: jsrsasign is vendored as <code>jsrsasign.js</code> in this same folder, not loaded from a CDN. Once you have this folder, it works with zero network access.
+</div>
+
+<script>
+function clearAll() {
+  document.getElementById('input').value = '';
+  document.getElementById('results').innerHTML = '<div class="empty">Decoded certs will appear here</div>';
+}
+
+function extractBlocks(text) {
+  const certRe = /-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/g;
+  const keyRe = /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----[\s\S]*?-----END (?:RSA |EC )?PRIVATE KEY-----/g;
+  const certs = text.match(certRe) || [];
+  const keys = text.match(keyRe) || [];
+  return { certs, keyCount: keys.length };
+}
+
+function fmtDate(d) {
+  // jsrsasign returns YYMMDDHHmmssZ or YYYYMMDDHHmmssZ style strings via getNotBefore/After
+  try {
+    const zTime = d;
+    const dt = new X509().getX509DateStringFromString ? null : null;
+    return zTime;
+  } catch(e) { return d; }
+}
+
+function parseInput() {
+  const raw = document.getElementById('input').value;
+  const { certs, keyCount } = extractBlocks(raw);
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = '';
+
+  if (certs.length === 0 && keyCount === 0) {
+    resultsEl.innerHTML = '<div class="empty">No PEM certificate or key blocks found in the pasted text</div>';
+    return;
+  }
+
+  if (keyCount > 0) {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<div class="card-head"><span class="card-title">Private key block(s) detected</span><span class="badge key">${keyCount} found, not parsed</span></div>
+      <div class="row"><span class="val">This file contains private key material. Do not paste this into any tool you don't fully trust and control — including this one, if it weren't local. Treat the source file as sensitive.</span></div>`;
+    resultsEl.appendChild(div);
+  }
+
+  certs.forEach((pem, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    try {
+      const x = new X509();
+      x.readCertPEM(pem);
+
+      const subject = x.getSubjectString();
+      const issuer = x.getIssuerString();
+      const serial = x.getSerialNumberHex();
+      const notBefore = x.getNotBefore();
+      const notAfter = x.getNotAfter();
+      const isSelfSigned = (subject === issuer);
+
+      let isCA = false;
+      try {
+        const bc = x.getExtBasicConstraints();
+        isCA = !!(bc && bc.cA);
+      } catch (e) {}
+
+      let sha256fp = '';
+      try {
+        sha256fp = KJUR.crypto.Util.hashHex(x.hex, 'sha256').replace(/(.{2})/g, '$1:').slice(0, -1);
+      } catch(e) { sha256fp = 'unavailable'; }
+
+      let sans = [];
+      try {
+        const sanExt = x.getExtSubjectAltName2();
+        if (sanExt) sans = sanExt.map(s => s[1]);
+      } catch(e) {}
+
+      const badgeHtml = isCA
+        ? '<span class="badge ca">CA certificate</span>'
+        : '<span class="badge leaf">Client/leaf certificate</span>';
+
+      card.innerHTML = `
+        <div class="card-head">
+          <span class="card-title">Certificate ${i + 1}</span>
+          ${badgeHtml}
+        </div>
+        <div class="row"><span class="label">Subject</span><span class="val">${subject}</span></div>
+        <div class="row"><span class="label">Issuer</span><span class="val">${issuer}</span></div>
+        <div class="row"><span class="label">Self-signed</span><span class="val">${isSelfSigned ? 'yes (this is a root)' : 'no'}</span></div>
+        <div class="row"><span class="label">Valid from</span><span class="val">${notBefore}</span></div>
+        <div class="row"><span class="label">Valid until</span><span class="val">${notAfter}</span></div>
+        <div class="row"><span class="label">Serial</span><span class="val">${serial}</span></div>
+        <div class="row"><span class="label">SHA-256 fp</span><span class="val">${sha256fp}</span></div>
+        ${sans.length ? `<div class="row"><span class="label">SANs</span><span class="val">${sans.join(', ')}</span></div>` : ''}
+      `;
+    } catch (err) {
+      card.innerHTML = `<div class="card-head"><span class="card-title">Certificate ${i + 1}</span><span class="badge leaf">parse failed</span></div>
+        <div class="row"><span class="val">Could not parse this block: ${err.message}</span></div>`;
+    }
+    resultsEl.appendChild(card);
+  });
+}
+</script>
+
+</body>
+</html>
