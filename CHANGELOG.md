@@ -1,8 +1,13 @@
-CHANGELOG.md v1.0.2 (Last Rev: 2026-11-26)
+CHANGELOG.md v1.0.3 (Last Rev: 2026-11-26)
 
 # Changelog
 
 All notable changes, newest first. Versions match `Checker.VERSION` in `js/version.js`.
+
+## v2.0.3 - 2026-11-26
+
+### Changed
+- Capitalization follows the two-tier ILHS guideline: labels, buttons, tags, and menus keep the strict short-word rule; headlines and titles use headline style. The footer mark is "FOSS For All" again, as approved.
 
 ## v2.0.2 - 2026-11-26
 

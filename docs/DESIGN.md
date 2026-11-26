@@ -1,4 +1,4 @@
-DESIGN.md v1.0.2 (Last Rev: 2026-11-26)
+DESIGN.md v1.0.3 (Last Rev: 2026-11-26)
 
 # Design
 
@@ -23,7 +23,12 @@ How the checker presents itself and behaves. Structure lives in `ARCHITECTURE.md
 - **Brand:** palette `--bg`, `--surface`, `--surface-2`, `--line`, `--text`, `--muted`, `--accent` (teal), `--amber` (warnings), `--red` (errors and key warnings). `--field-line` mixes `--muted` into `--line` for field borders.
 - **Contrast:** every text pair meets WCAG AA 4.5:1 in both themes (lowest 5.43:1, light theme); field borders 3.3:1 to 4.5:1 `[TESTED]` (2026-11-26, in-browser computed colors).
 - **Type and sizing:** ILHS Shared Sizing Spec v2.0.0 tokens only, pinned in `docs/shared/ilhs-sizing-tokens.css`. Page title `--fs-h1`, card titles `--fs-h3`, table text `--fs-nav` and `--fs-small`, paste box `--fs-body` (never under 16 px). Buttons at least 44 x 44 px; footer links at least 24 px tall.
-- **Copy:** Title Case with the owner's short-word rule (2026-11-26): words of 4 or more letters capitalized, words of 3 letters or fewer lowercase ("Issued by", "Public key"), except the first word, the first word after a colon, acronyms, proper names, the pronoun I, and unit symbols in parentheses; it applies to headings, buttons, and labels. No emoji or exclamation marks. No sales copy.
+- **Copy:** **Capitalization (owner guideline, 2026-11-26).** Two kinds of text:
+  1. **Labels, buttons, tags, menu items, form labels, and table headers:** the strict short-word rule. Words of 4 or more letters are capitalized; words of 3 letters or fewer are lowercase, except the first word (or the first word after a colon). Examples: "Free and Open Source", "View on GitHub", "Download for Windows", "Clear all", "Look up".
+  2. **Headlines, page and section titles, card and panel titles, eyebrow lines, and taglines:** headline style, using judgment for what reads best. Capitalize every word except short articles, conjunctions, and prepositions in the middle (a, an, the, and, but, or, nor, as, at, by, for, in, of, on, per, to, via). Short words that carry meaning are capitalized (Is, It, Not, Two, Do, We, Up in "Add It Up"). The first and last words are always capitalized. Examples: "Who We Are", "Get It Free", "Page Not Found", "Same Experience on Windows, Mac, and Linux".
+  3. **Approved taglines keep their own capitalization:** "Free Software For All" and "FOSS For All".
+  In both kinds, keep acronyms (IP, DNS, PoE), proper names (Mac), the pronoun I, and unit symbols in parentheses ((W)) as they are. Sentences use normal sentence case.
+  No emoji or exclamation marks.
 - **Print:** prints the result cards only.
 
 ## Principles

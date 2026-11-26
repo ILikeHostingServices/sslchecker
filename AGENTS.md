@@ -1,4 +1,4 @@
-AGENTS.md v1.0.1 (Last Rev: 2026-11-26)
+AGENTS.md v1.0.2 (Last Rev: 2026-11-26)
 
 # SSL Certificate Checker - Agent Guide
 
@@ -57,6 +57,6 @@ A free, browser-only certificate checker published by ILHS at https://sslchecker
 - **No network calls.** The page talks to no other host; `connect-src 'self'` in `worker/index.js` enforces it. Do not add a CDN, analytics, or lookups.
 - **No inline scripts or styles** in `index.html` (the CSP forbids them; tests check).
 - **Vendored code:** `js/vendor/jsrsasign-all-min.js` is copied unedited from the npm package `lib/` folder. Update it in its own pull request and run the tests.
-- **Brand:** ILHS palette and tokens, Title Case with the owner's short-word rule (2026-11-26): words of 4 or more letters capitalized, words of 3 letters or fewer lowercase ("Issued by", "Public key"), except the first word, the first word after a colon, acronyms, proper names, the pronoun I, and unit symbols in parentheses, Sizing Spec v2.0.0 (44 px controls, 24 px text links, one-row 56 px header, footer at most 120 px desktop and 200 px phone), no shadows, emoji, or exclamation marks. Do not spell out ILHS. Contact: info@ilhs.app.
+- **Brand:** ILHS palette and tokens, Title Case per the ILHS capitalization guideline (2026-11-26): labels, buttons, tags, and menus use the strict short-word rule (3 letters or fewer lowercase, e.g. "Free and Open Source", "Clear all"); headlines, titles, eyebrows, and taglines use headline style with judgment ("Who We Are", "Get It Free"); the taglines "Free Software For All" and "FOSS For All" are fixed (details in `docs/DESIGN.md`), Sizing Spec v2.0.0 (44 px controls, 24 px text links, one-row 56 px header, footer at most 120 px desktop and 200 px phone), no shadows, emoji, or exclamation marks. Do not spell out ILHS. Contact: info@ilhs.app.
 - **Formatting:** no em or en dashes in files you write; dates YYYY-MM-DD; times 24 hour.
 - **Gotchas:** (a) jsrsasign defines globals with top-level `var`, so tests load it through `vm.runInThisContext` (`tests/load.js`), not `require`. (b) On Windows, `import()` of a path needs `pathToFileURL`. (c) Unicode escapes written through a script can turn into literal characters; check the saved file. (d) `openssl req -subj "/..."` in Git Bash needs `MSYS_NO_PATHCONV=1`.
