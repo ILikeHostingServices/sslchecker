@@ -1,0 +1,47 @@
+// wrangler.jsonc v1.0.0 (Last Rev: 2026-11-26)
+// Cloudflare Workers config for sslchecker.ilhs.app, live and staging.
+//   Live:    Worker `sslchecker`, branch `main`, deploy command `npx wrangler deploy --env=""`
+//   Staging: Worker `sslchecker-staging`, branch `staging`, deploy command `npx wrangler deploy --env staging`
+// "name" must match the Worker in the dashboard. Custom domains and Cloudflare Access are dashboard settings,
+// not here; see docs/DEPLOYMENT.md. Bindings and vars are not inherited by env.staging, so every one is repeated.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sslchecker",
+  "compatibility_date": "2026-11-26",
+  "main": "worker/index.js",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    // Run the Worker on every request so the redirects and security headers always apply.
+    "run_worker_first": true
+  },
+  // sslchecker.ilhs.app is the only public address: no workers.dev URL and no branch preview URLs.
+  "workers_dev": false,
+  "preview_urls": false,
+  // Upload/deploy time of this version; the Worker sends it as Last-Modified for the footer.
+  "version_metadata": { "binding": "CF_VERSION_METADATA" },
+  "vars": {
+    // Every other custom domain on this Worker (sslchecker.syshost.app) 301-redirects here. Empty disables it.
+    "PRIMARY_HOST": "sslchecker.ilhs.app",
+    // "1" sends noindex and a disallow-all robots.txt (staging only).
+    "NOINDEX": ""
+  },
+
+  "env": {
+    "staging": {
+      "name": "sslchecker-staging",
+      "assets": {
+        "directory": ".",
+        "binding": "ASSETS",
+        "run_worker_first": true
+      },
+      "workers_dev": false,
+      "preview_urls": false,
+      "version_metadata": { "binding": "CF_VERSION_METADATA" },
+      "vars": {
+        "PRIMARY_HOST": "sslchecker-staging.ilhs.app",
+        "NOINDEX": "1"
+      }
+    }
+  }
+}
