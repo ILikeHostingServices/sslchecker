@@ -1,138 +1,74 @@
-# sslchecker
+README.md v2.0.0 (Last Rev: 2026-11-26)
 
-A single-page, client-side X.509 certificate decoder. Paste a PEM certificate,
-a full `.ovpn` file, or several certs at once, and it tells you what each
-block actually is — subject, issuer, validity window, serial, SHA-256
-fingerprint, SANs, and whether it's a CA or a leaf/client cert.
+# SSL Certificate Checker
 
-**Live version:** https://sslchecker.sysapp.host
+A free, single-page certificate checker published by ILHS at https://sslchecker.ilhs.app. Paste a PEM certificate, a chain, or a whole OpenVPN `.ovpn` profile, and it labels every certificate in it.
 
-## Why this exists
+## Overview
 
-OpenVPN client export files (from UniFi, pfSense/Netgate, OPNsense, etc.)
-bundle multiple PEM blocks into one file — usually a CA cert, a client cert,
-and a private key, sometimes with an intermediate in the chain. When you're
-staring at three `-----BEGIN CERTIFICATE-----` blocks with no labels, it's
-not always obvious at a glance which is which without pulling each one apart
-with `openssl x509 -noout -subject -issuer` by hand. This does that, in a
-browser, instantly, for as many blocks as you paste in at once.
+OpenVPN profiles exported from UniFi, pfSense, OPNsense, and similar bundle several PEM blocks in one file: usually a CA certificate, a client certificate, and a private key. This page tells you which is which without running `openssl x509` on each block by hand.
 
-## How it works
+For each certificate it shows the subject, issuer, which pasted certificate signed it (checked by signature, not just by name), validity dates in UTC with days left or expired, names (SAN), public key type and size, signature algorithm, key usage, serial, SHA-256 fingerprint, and SHA-1 thumbprint (the value Windows shows).
 
-- Pure client-side JavaScript. No backend, no API, no server component.
-- Certificate parsing is done by [jsrsasign](https://kjur.github.io/jsrsasign/),
-  a widely used pure-JS crypto/PKI library. This tool doesn't implement any
-  ASN.1/X.509 parsing itself — it hands each detected PEM block to jsrsasign
-  and reads back the fields.
-- On page load, the input text is regex-matched for `-----BEGIN
-  CERTIFICATE-----` / `-----BEGIN PRIVATE KEY-----` (and `RSA
-  PRIVATE KEY`) blocks. Each certificate block is parsed independently, so a
-  file with multiple certs shows multiple result cards.
-- Private key blocks are detected and flagged, but the content is never
-  passed to any parser and never rendered — the tool tells you a key is
-  present and stops there.
+Privacy:
 
-## What this tool does *not* do
+- Everything runs in your browser tab. The page makes no requests to any other site, and the Content-Security-Policy blocks it from doing so.
+- Nothing is saved: no cookies, no storage, no analytics. Reload the page and the text is gone.
+- Private keys and OpenVPN static keys are detected by their `BEGIN` line and flagged. Their contents are never parsed or shown.
+- The paste box turns off browser spell check, which on some browsers sends typed text to a cloud service.
 
-- It does not track anything. There is no analytics script, no telemetry, no
-  pixel, nothing phoning home about usage.
-- It does not scan anything. There's no lookup against any external cert
-  database, revocation list, or transparency log — it only reads the text you
-  paste into the box.
-- It does not save anything. There's no `localStorage`, no `sessionStorage`,
-  no cookies, no server to persist to. Refresh the page and everything is
-  gone. Nothing you paste in ever leaves your browser tab — the only network
-  request the page makes at all is fetching the jsrsasign library file
-  itself (and the local build below removes even that).
-- It doesn't parse or display private key material, even though it's happy
-  to tell you one is present in the file.
+Certificate parsing uses [jsrsasign](https://kjur.github.io/jsrsasign/) (MIT), vendored in `js/vendor/`.
 
-This is FOSS. Take the code, read it, change it, self-host it — there's
-nothing hidden and nothing calling home.
+## Files
 
-## Two versions in this repo
+| Path | What it is |
+|---|---|
+| `index.html` | The page |
+| `css/style.css` | ILHS brand styles, with the pinned ILHS Shared Sizing Spec block |
+| `js/checker.js` | Finds PEM blocks and describes each certificate (no DOM, tested in Node) |
+| `js/app.js` | Page wiring: draws the result cards with `textContent` only |
+| `js/version.js` | App name and version shown in the footer |
+| `js/vendor/jsrsasign-all-min.js` | jsrsasign 11.1.5 from npm, unedited |
+| `assets/` | ILHS mark and self-hosted fonts (SIL Open Font License texts included) |
+| `favicon.svg`, `robots.txt`, `.well-known/security.txt` | Site icon, crawler rules, security contact |
+| `worker/index.js`, `wrangler.jsonc` | Cloudflare Worker: redirects, security headers, staging noindex |
+| `tests/` | `node --test` suites and example certificates |
+| `docs/` | Architecture, design, decisions, roadmap, runbook, deployment |
 
-| Path | What it loads | Use case |
-|---|---|---|
-| `/` (`index.html`) | jsrsasign from cdnjs | The version deployed to sslchecker.sysapp.host |
-| `/local` (`local/index.html` + `local/jsrsasign.js`) | jsrsasign vendored locally, no CDN | Fully offline use — no network access needed at all once you have the files |
+## Quick Start
 
-## Running it locally
+Use it at https://sslchecker.ilhs.app, or run it yourself with no network access at all:
 
-You don't need Cloudflare, a web server, or an internet connection for the
-`/local` version. Clone or download this repo, then just open the file:
-
-```bash
+```
 git clone https://github.com/ILikeHostingServices/sslchecker.git
-cd sslchecker/local
+cd sslchecker
 ```
 
-Then open `index.html` directly in a browser (double-click it, or
-`open index.html` / `xdg-open index.html`). Because `jsrsasign.js` sits
-right next to it in the same folder and is loaded via a relative
-`<script src="./jsrsasign.js">` tag, it works straight from the filesystem
-(`file://`) with zero network access required.
+Then open `index.html` in a browser (double-click it). Every file the page needs is in the folder.
 
-If you'd rather serve it over HTTP instead of opening it as a local file
-(some browsers are stricter about `file://` script loading than others),
-any static file server works:
+To serve it over HTTP instead, use any static file server from the repository root, for example `npx --yes serve -l 8931` or `python -m http.server 8931`, then open http://localhost:8931.
 
-```bash
-cd sslchecker/local
-python3 -m http.server 8080
-# then open http://localhost:8080
+To run it the way Cloudflare serves it (redirects and headers included): `npx wrangler dev --var PRIMARY_HOST:127.0.0.1`, then open http://127.0.0.1:8787.
+
+Run the tests (Node 20 or newer, no install step):
+
+```
+node --test tests/*.test.js
 ```
 
-The root version (`index.html` at the repo root) will also run the same
-way, but it fetches jsrsasign from cdnjs on load, so it needs outbound
-internet access to that one domain.
+## After Install Configuration
 
-## Does the vendored jsrsasign.js go stale?
+None for the page. To host it on your own Cloudflare account, change `name` and `PRIMARY_HOST` in `wrangler.jsonc` (set `PRIMARY_HOST` to empty to turn off the redirect). On any other web server, serve the repository root as static files; `docs/DEPLOYMENT.md` lists the security headers to copy.
 
-Yes, in the sense that it's a snapshot (currently 10.9.0, 2023-11-27) that
-won't pick up upstream bug fixes or new features on its own. The practical
-risk is low for what this tool does — it's read-only parsing/display, not a
-security control making pass/fail decisions — but a parsing bug could in
-theory misreport a field.
+## Troubleshooting
 
-If you want to keep it current automatically, a scheduled job is the right
-tool, not a live pull on every page load (that would reintroduce a
-per-visit dependency on the CDN, which defeats the point of the `/local`
-version). Two ways to do it:
-
-**GitHub Actions (cron-scheduled workflow)** — a `.github/workflows/`
-job that runs on a schedule (e.g. weekly), `curl`s the current jsrsasign
-version from cdnjs or npm, diffs it against `local/jsrsasign.js`, and if
-it's changed, commits the update (or opens a PR for you to review before
-merging, which is the safer default for a vendored dependency). This is the
-straightforward option and needs no extra infrastructure beyond the repo
-itself.
-
-**Cloudflare Worker (cron trigger)** — a Worker on a Cron Trigger could
-fetch the latest file from cdnjs and push a commit via the GitHub API on a
-schedule. This makes sense if you want the refresh logic living alongside
-your other Cloudflare-hosted pieces rather than in GitHub Actions, but for
-a single vendored file, it's more moving parts (Worker + GitHub API token
-management) for the same outcome the Action gets you natively.
-
-Given you're already running Gitea Actions elsewhere, note that the GitHub
-Actions version here is GitHub-specific syntax — if you ever mirror this
-repo back to Gitea, the workflow file itself doesn't transfer as-is, though
-the same cron-diff-commit logic works fine under `act_runner`.
-
-## A note on `index.html` naming
-
-Both the root and `/local` need to be named `index.html` if you want clean
-URLs — `sslchecker.sysapp.host` and `sslchecker.sysapp.host/local` — without
-appending a filename. Cloudflare Pages (like most static hosts) serves
-`index.html` automatically for a directory path; anything else needs its
-full filename typed out (`/local/cert-decoder.html`), which is uglier and
-easy to mistype when sharing a link.
+| Problem | Fix |
+|---|---|
+| "No certificate or key blocks found" | The text must include the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` lines. DER (binary) files must be converted first: `openssl x509 -inform der -in cert.cer -out cert.pem` |
+| "Could not read this block as a certificate" | The block was cut short or changed while copying. Copy it again, whole |
+| "Issued By: Not in the pasted text" | The issuing CA certificate was not pasted. Paste the chain to see the links |
+| Footer shows no build time | Normal when opened from a file; the build time comes from the web server's `Last-Modified` header |
 
 ## License
 
-No license file is included yet. Until one is added, default copyright
-applies and reuse technically isn't guaranteed even though the intent here
-is fully open. If you want the FOSS intent to actually be enforceable,
-add a `LICENSE` file — MIT is a common, low-friction choice for a small
-utility like this.
+MIT. See `LICENSE`. jsrsasign is MIT licensed by Kenji Urushima; the fonts are under the SIL Open Font License.

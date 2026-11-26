@@ -1,0 +1,178 @@
+/* style.css v2.0.0 (Last Rev: 2026-11-26)
+   SSL Certificate Checker styles. Colors, fonts, header, and buttons follow the ILHS brand as used on ilhs.app and
+   calc.ilhs.app. Dark first; light follows the system setting. Every size comes from the ILHS Shared Sizing Spec
+   block below, pinned in docs/shared/ilhs-sizing-tokens.css; tests/site.test.js fails if the two differ. */
+
+@font-face { font-family: "Familjen Grotesk"; font-weight: 700; font-display: swap; src: url("../assets/fonts/familjen-grotesk-700.woff2") format("woff2"); }
+@font-face { font-family: "Source Sans 3"; font-weight: 200 900; font-display: swap; src: url("../assets/fonts/source-sans-3-var.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 100 800; font-display: swap; src: url("../assets/fonts/jetbrains-mono-var.woff2") format("woff2"); }
+
+/* ILHS Shared Sizing Spec v2.0.0 start: from ilhs-internal org/brand/SIZING.md, do not edit here */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Phones 0.85x -> 1x at 800 px; 1x to 1920 px; then up to 1.15x at 3840 x 2160. */
+  font-size: max(clamp(0.85rem, 0.7rem + 0.6vw, 1rem), min(0.85rem + 0.125vw, 0.85rem + 0.2222vh, 1.15rem));
+}
+:root {
+  --fs-small: clamp(0.8125rem, 0.7851rem + 0.112vw, 0.875rem);    /* 13 -> 14 px */
+  --fs-label: 0.8125rem;                                          /* 13 px */
+  --fs-nav: clamp(0.875rem, 0.8476rem + 0.112vw, 0.9375rem);      /* 14 -> 15 px */
+  --fs-body: clamp(1rem, 0.9726rem + 0.112vw, 1.0625rem);         /* 16 -> 17 px */
+  --fs-lede: clamp(1.0625rem, 1.0351rem + 0.112vw, 1.125rem);     /* 17 -> 18 px */
+  --fs-h3: clamp(1.0625rem, 1.0077rem + 0.225vw, 1.1875rem);      /* 17 -> 19 px */
+  --fs-card: clamp(1.125rem, 1.0702rem + 0.225vw, 1.25rem);       /* 18 -> 20 px */
+  --fs-h2: clamp(1.3125rem, 1.1756rem + 0.562vw, 1.625rem);       /* 21 -> 26 px */
+  --fs-h1: clamp(1.625rem, 1.4059rem + 0.899vw, 2.125rem);        /* 26 -> 34 px */
+  --fs-hero: clamp(1.875rem, 1.4916rem + 1.573vw, 2.75rem);       /* 30 -> 44 px */
+
+  --wrap-max: 75rem;                                              /* 1200 px with gutters */
+  --measure: 42rem;                                               /* 672 px reading width */
+  --gutter: clamp(1rem, 0.5618rem + 1.798vw, 2rem);               /* 16 -> 32 px */
+  --section-pad: clamp(2rem, 1.3427rem + 2.697vw, 3.5rem);        /* 32 -> 56 px */
+  --hero-pad: clamp(2rem, 1.1236rem + 3.596vw, 4rem);             /* 32 -> 64 px */
+  --card-pad: clamp(1rem, 0.7809rem + 0.899vw, 1.5rem);           /* 16 -> 24 px */
+  --inset-pad: clamp(0.75rem, 0.5309rem + 0.899vw, 1.25rem);      /* 12 -> 20 px */
+  --gap: clamp(0.75rem, 0.5309rem + 0.899vw, 1.25rem);            /* 12 -> 20 px */
+  --tap: max(2.75rem, 44px);                                      /* buttons, fields, menu items */
+  --tap-inline: max(1.5rem, 24px);                                /* text links in lines and footers */
+  --header-h: max(3.5rem, 56px);                                  /* one-row site header */
+}
+/* ILHS Shared Sizing Spec v2.0.0 end */
+
+:root {
+  /* Color: dark (default), same values as ilhs.app */
+  --bg: #0b0f14;
+  --surface: #121821;
+  --surface-2: #1a222d;
+  --line: #263241;
+  --text: #e6edf3;
+  --muted: #94a3b5;
+  --accent: #2dd4bf;        /* signal-teal */
+  --accent-ink: #04201c;
+  --accent-soft: #0f2e2b;
+  --amber: #f5b544;         /* alert-amber: warnings */
+  --red: #ff7a72;           /* fault-red: errors only */
+
+  --display: "Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", Consolas, "SFMono-Regular", monospace;
+
+  /* Form field borders: --line alone is about 1.4:1 against the page, under the 3:1 that WCAG 1.4.11 asks of
+     input boundaries, so fields mix in --muted (3:1 or more in both themes). */
+  --field-line: color-mix(in srgb, var(--muted) 65%, var(--line));
+  --radius: 0.625rem;
+
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f8fa; --surface: #ffffff; --surface-2: #eef2f6; --line: #d5dde6;
+    --text: #111820; --muted: #4f5d6e; --accent: #0f766e; --accent-ink: #ffffff;
+    --accent-soft: #e0f4f1; --amber: #9a5b00; --red: #b42318;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f6f8fa; --surface: #ffffff; --surface-2: #eef2f6; --line: #d5dde6;
+  --text: #111820; --muted: #4f5d6e; --accent: #0f766e; --accent-ink: #ffffff;
+  --accent-soft: #e0f4f1; --amber: #9a5b00; --red: #b42318;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--body); font-size: var(--fs-body); line-height: 1.6; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 0.1875rem; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 0.25rem; }
+
+.wrap { max-width: var(--wrap-max); margin: 0 auto; padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); }
+.skip { position: absolute; left: -9999px; top: 0.5rem; min-height: var(--tap); display: inline-flex; align-items: center; background: var(--accent); color: var(--accent-ink); padding: 0.5rem 0.875rem; border-radius: 0.5rem; font-weight: 600; z-index: 30; }
+.skip:focus { left: 1rem; }
+
+/* ---------- Header (matches ilhs.app and calc.ilhs.app) ---------- */
+.top { border-bottom: 1px solid var(--line); background: var(--surface); }
+.top .wrap { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: var(--header-h); padding-block: 0.25rem; }
+.brand-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: nowrap; min-width: 0; }
+.brand { display: inline-flex; align-items: center; gap: 0.625rem; min-height: var(--tap); color: var(--text); text-decoration: none; }
+.brand img { width: 1.75rem; height: 1.75rem; display: block; }
+.wordmark { font: 800 1.25rem/1 var(--mono); letter-spacing: .02em; }
+.wordmark::after { content: ""; display: inline-block; width: .55em; height: .9em; margin-left: .12em; vertical-align: -.08em; background: var(--accent); }
+.app-title { font-size: var(--fs-nav); font-weight: 700; padding-left: 0.75rem; border-left: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.top-actions { display: flex; align-items: center; flex: none; }
+.top-actions a { color: var(--muted); text-decoration: none; font-size: var(--fs-nav); display: inline-flex; align-items: center; min-height: var(--tap); padding-inline: 0.5rem; }
+.top-actions a:hover { color: var(--text); }
+/* Phones: one header row (Sizing Spec v2 page budget). The mark stands in for the wordmark and already links to ilhs.app. */
+@media (max-width: 639px) {
+  .wordmark, .top-actions { display: none; }
+}
+
+/* ---------- Page ---------- */
+main { padding-block: var(--gap) var(--section-pad); }
+main:focus { outline: none; }
+.page-title { font-size: var(--fs-h1); letter-spacing: -.01em; margin-bottom: 0.5rem; }
+.intro { color: var(--muted); max-width: var(--measure); margin-bottom: 0.75rem; }
+.privacy-note { display: inline-block; font-size: var(--fs-small); color: var(--muted); border: 1px dashed var(--field-line); border-radius: 0.5rem; padding: 0.375rem 0.625rem; margin-bottom: var(--gap); }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap); align-items: start; }
+.layout > * { min-width: 0; }
+@media (min-width: 960px) {
+  .layout { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .input-card { position: sticky; top: 1rem; }
+}
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--card-pad); min-width: 0; }
+.input-card label { display: block; font-size: var(--fs-nav); font-weight: 600; margin-bottom: 0.5rem; }
+/* 16 px or more, or iPhones zoom the page when the box is tapped. */
+.field { display: block; width: 100%; min-height: 14rem; resize: vertical; padding: 0.5rem 0.75rem; border: 1px solid var(--field-line); border-radius: 0.5rem; background: var(--bg); color: var(--text); font-family: var(--mono); font-size: var(--fs-body); line-height: 1.5; white-space: pre; overflow-wrap: normal; }
+::placeholder { color: var(--muted); opacity: 1; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--tap); min-width: var(--tap); padding: 0.5rem 1rem; border-radius: 0.5rem; border: 1px solid var(--field-line); background: var(--surface-2); color: var(--text); font: inherit; font-size: var(--fs-nav); font-weight: 600; line-height: 1.25; cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.hint { color: var(--muted); font-size: var(--fs-small); }
+.error { color: var(--red); }
+
+/* ---------- Results ---------- */
+.results { display: flex; flex-direction: column; gap: var(--gap); }
+.empty { color: var(--muted); text-align: center; padding: 2.5rem 1rem; border: 1px dashed var(--field-line); border-radius: var(--radius); }
+.card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; padding-bottom: 0.625rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--line); }
+.card-head h3 { font-size: var(--fs-h3); overflow-wrap: anywhere; min-width: 0; }
+.badges { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+.badge { font-size: var(--fs-label); font-weight: 600; line-height: 1.4; padding: 0.125rem 0.5rem; border: 1px solid currentColor; border-radius: 0.375rem; white-space: nowrap; }
+.badge.ca, .badge.ok { color: var(--accent); }
+.badge.leaf { color: var(--text); border-color: var(--field-line); }
+.badge.warn { color: var(--amber); }
+.badge.bad { color: var(--red); }
+.result > p { color: var(--muted); }
+
+/* Key/value table: fixed label column on wide screens, label stacked above the value on phones. */
+.kv { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--fs-nav); }
+.kv th, .kv td { text-align: left; vertical-align: top; padding: 0.375rem 0.5rem 0.375rem 0; border-bottom: 1px solid var(--line); }
+.kv tr:last-child th, .kv tr:last-child td { border-bottom: 0; }
+.kv th { width: 34%; color: var(--muted); font-weight: 400; }
+.kv td { font-family: var(--mono); font-size: var(--fs-small); overflow-wrap: anywhere; }
+@media (max-width: 599px) {
+  .kv, .kv tbody, .kv tr, .kv th, .kv td { display: block; width: auto; }
+  .kv tr { padding: 0.375rem 0; border-bottom: 1px solid var(--line); }
+  .kv tr:last-child { border-bottom: 0; }
+  .kv th, .kv td { border-bottom: 0; padding: 0; }
+  .kv th { font-size: var(--fs-label); }
+}
+
+/* ---------- Footer (Sizing Spec v2: at most 120 px desktop, 200 px phone) ---------- */
+.app-footer { border-top: 1px solid var(--line); padding-block: 1rem 1.25rem; text-align: center; color: var(--muted); font-size: var(--fs-small); }
+.app-footer p { margin: 0.125rem 0; }
+.app-footer .tagline { font-size: var(--fs-nav); font-style: italic; }
+.app-footer .meta, .app-footer .links { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0 1rem; }
+.app-footer .meta { display: flex; }
+.app-footer a { color: var(--muted); display: inline-flex; align-items: center; min-height: var(--tap-inline); }
+.app-footer a:hover { color: var(--text); }
+@media (max-width: 639px) {
+  .app-footer .meta { flex-direction: column; align-items: center; }
+}
+
+@media print {
+  .top, .input-card, .app-footer, .skip, .privacy-note { display: none !important; }
+  .layout { display: block; }
+}
