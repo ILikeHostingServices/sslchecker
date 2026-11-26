@@ -1,4 +1,4 @@
-/* js/checker.js v2.0.0 (Last Rev: 2026-11-26) */
+/* js/checker.js v2.0.1 (Last Rev: 2026-11-26) */
 /* Certificate logic, no DOM: finds PEM blocks in pasted text and describes each certificate with jsrsasign
    (js/vendor/jsrsasign-all-min.js, which defines the X509, KJUR, and zulutodate globals). Private keys and
    OpenVPN static keys are counted by their BEGIN line only; their contents are never parsed or returned.
@@ -44,7 +44,7 @@ window.Checker = window.Checker || {};
 
   function validity(x, now) {
     const from = zulutodate(x.getNotBefore()), until = zulutodate(x.getNotAfter());
-    if (now < from) return { level: "bad", label: "Not Valid Yet", text: `Not valid yet: starts in ${Math.ceil((from - now) / DAY)} days`, from, until };
+    if (now < from) return { level: "bad", label: "Not Valid yet", text: `Not valid yet: starts in ${Math.ceil((from - now) / DAY)} days`, from, until };
     if (now > until) return { level: "bad", label: "Expired", text: `Expired ${Math.floor((now - until) / DAY)} days ago`, from, until };
     const left = Math.floor((until - now) / DAY);
     return { level: left < SOON_DAYS ? "warn" : "ok", label: left < SOON_DAYS ? "Expires Soon" : "Valid", text: `Valid, ${left} days left`, from, until };
@@ -86,15 +86,15 @@ window.Checker = window.Checker || {};
       const rows = [
         ["Subject", x.getSubjectString()],
         ["Issuer", x.getIssuerString()],
-        ["Issued By", issuedBy(i, parsed)],
+        ["Issued by", issuedBy(i, parsed)],
         ["Valid From", utc(v.from)],
         ["Valid Until", utc(v.until)],
         ["Status", v.text],
         ["Names (SAN)", sans(x)],
-        ["Public Key", keyText(x)],
+        ["Public key", keyText(x)],
         ["Signature", x.getSignatureAlgorithmName()],
         ["Key Usage", ku && ku.names ? ku.names.join(", ") : ""],
-        ["Extended Key Usage", eku && eku.array ? eku.array.join(", ") : ""],
+        ["Extended key Usage", eku && eku.array ? eku.array.join(", ") : ""],
         ["Serial", colons(x.getSerialNumberHex())],
         ["SHA-256 Fingerprint", colons(KJUR.crypto.Util.hashHex(x.hex, "sha256"))],
         ["SHA-1 Thumbprint", colons(KJUR.crypto.Util.hashHex(x.hex, "sha1"))],
