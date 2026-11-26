@@ -1,4 +1,4 @@
-DESIGN.md v1.0.1 (Last Rev: 2026-11-26)
+DESIGN.md v1.0.2 (Last Rev: 2026-11-26)
 
 # Design
 
@@ -23,7 +23,7 @@ How the checker presents itself and behaves. Structure lives in `ARCHITECTURE.md
 - **Brand:** palette `--bg`, `--surface`, `--surface-2`, `--line`, `--text`, `--muted`, `--accent` (teal), `--amber` (warnings), `--red` (errors and key warnings). `--field-line` mixes `--muted` into `--line` for field borders.
 - **Contrast:** every text pair meets WCAG AA 4.5:1 in both themes (lowest 5.43:1, light theme); field borders 3.3:1 to 4.5:1 `[TESTED]` (2026-11-26, in-browser computed colors).
 - **Type and sizing:** ILHS Shared Sizing Spec v2.0.0 tokens only, pinned in `docs/shared/ilhs-sizing-tokens.css`. Page title `--fs-h1`, card titles `--fs-h3`, table text `--fs-nav` and `--fs-small`, paste box `--fs-body` (never under 16 px). Buttons at least 44 x 44 px; footer links at least 24 px tall.
-- **Copy:** Title Case for headings, buttons, and labels, with minor words lowercase in the middle. No emoji or exclamation marks. No sales copy.
+- **Copy:** Title Case with the owner's short-word rule (2026-11-26): words of 4 or more letters capitalized, words of 3 letters or fewer lowercase ("Issued by", "Public key"), except the first word, the first word after a colon, acronyms, proper names, the pronoun I, and unit symbols in parentheses; it applies to headings, buttons, and labels. No emoji or exclamation marks. No sales copy.
 - **Print:** prints the result cards only.
 
 ## Principles

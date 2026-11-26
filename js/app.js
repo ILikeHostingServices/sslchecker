@@ -1,4 +1,4 @@
-/* js/app.js v2.0.0 (Last Rev: 2026-11-26) */
+/* js/app.js v2.0.1 (Last Rev: 2026-11-26) */
 /* Page wiring: checks the pasted text on every change and draws one card per certificate. Every value goes in
    through textContent (certificate fields are attacker-chosen; tests/site.test.js fails on innerHTML). */
 (function () {
@@ -32,7 +32,7 @@
       return;
     }
     if (secrets.length) {
-      const c = card("Private Key Material Found", [["bad", `${secrets.length} Not Read`]]);
+      const c = card("Private key Material Found", [["bad", `${secrets.length} not Read`]]);
       c.append(el("p", "", `This text holds ${secrets.join(", ")} block${secrets.length > 1 ? "s" : ""}. ` +
         "They are flagged here and never read or shown. Treat the file it came from as a secret."));
       results.append(c);
