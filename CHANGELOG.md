@@ -1,8 +1,13 @@
-CHANGELOG.md v1.0.1 (Last Rev: 2026-11-26)
+CHANGELOG.md v1.0.2 (Last Rev: 2026-11-26)
 
 # Changelog
 
 All notable changes, newest first. Versions match `Checker.VERSION` in `js/version.js`.
+
+## v2.0.2 - 2026-11-26
+
+### Changed
+- Labels follow the ILHS short-word capitalization rule: words of 3 letters or fewer are lowercase ("Issued by", "Public key", "Extended key Usage", "Not Valid yet"), and the footer mark reads "FOSS for all", matching ilhs.app and calc.ilhs.app.
 
 ## v2.0.1 - 2026-11-26
 
