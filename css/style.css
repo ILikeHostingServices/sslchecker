@@ -1,4 +1,4 @@
-/* style.css v2.0.0 (Last Rev: 2026-11-26)
+/* style.css v2.0.1 (Last Rev: 2026-11-26)
    SSL Certificate Checker styles. Colors, fonts, header, and buttons follow the ILHS brand as used on ilhs.app and
    calc.ilhs.app. Dark first; light follows the system setting. Every size comes from the ILHS Shared Sizing Spec
    block below, pinned in docs/shared/ilhs-sizing-tokens.css; tests/site.test.js fails if the two differ. */
@@ -160,16 +160,19 @@ main:focus { outline: none; }
   .kv th { font-size: var(--fs-label); }
 }
 
-/* ---------- Footer (Sizing Spec v2: at most 120 px desktop, 200 px phone) ---------- */
-.app-footer { border-top: 1px solid var(--line); padding-block: 1rem 1.25rem; text-align: center; color: var(--muted); font-size: var(--fs-small); }
-.app-footer p { margin: 0.125rem 0; }
-.app-footer .tagline { font-size: var(--fs-nav); font-style: italic; }
-.app-footer .meta, .app-footer .links { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0 1rem; }
-.app-footer .meta { display: flex; }
+/* ---------- Footer ---------- */
+/* ILHS Site Footer (Sizing Spec v2.0.0, "Site Footer"): the same on ilhs.app and every app site. */
+.app-footer { border-top: 1px solid var(--line); padding-block: 1rem 1.25rem; display: grid; gap: 0.25rem; text-align: center; color: var(--muted); font-size: var(--fs-small); }
+.app-footer p { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 1rem; margin: 0; }
+.app-footer .brand-contact { display: grid; gap: 0.25rem; }
+.app-footer .foss { font: 700 var(--fs-label)/1.6 var(--mono); color: var(--accent); }
 .app-footer a { color: var(--muted); display: inline-flex; align-items: center; min-height: var(--tap-inline); }
 .app-footer a:hover { color: var(--text); }
-@media (max-width: 639px) {
-  .app-footer .meta { flex-direction: column; align-items: center; }
+@media (min-width: 600px) {
+  .app-footer .brand-contact { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 1rem; }
+}
+@media (max-width: 599px) {
+  .app-footer .site-line { flex-direction: column; align-items: center; }
 }
 
 @media print {

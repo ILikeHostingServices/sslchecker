@@ -1,8 +1,14 @@
-CHANGELOG.md v1.0.0 (Last Rev: 2026-11-26)
+CHANGELOG.md v1.0.1 (Last Rev: 2026-11-26)
 
 # Changelog
 
 All notable changes, newest first. Versions match `Checker.VERSION` in `js/version.js`.
+
+## v2.0.1 - 2026-11-26
+
+### Changed
+
+- Footer now uses the shared ILHS Site Footer (Sizing Spec v2.0.0), the same as ilhs.app and calc.ilhs.app: version and build time; the FOSS For All mark and copyright; contact and source links. Brand and contact share one line from 600 px. The "Free Software For All" tagline is gone, since the mark says it.
 
 ## v2.0.0 - 2026-11-26
 
