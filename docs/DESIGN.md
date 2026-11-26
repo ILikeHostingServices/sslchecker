@@ -1,4 +1,4 @@
-DESIGN.md v1.0.0 (Last Rev: 2026-11-26)
+DESIGN.md v1.0.1 (Last Rev: 2026-11-26)
 
 # Design
 
@@ -18,7 +18,7 @@ How the checker presents itself and behaves. Structure lives in `ARCHITECTURE.md
 
 ## User Interface
 
-- **Layout:** one-row 56 px header (ILHS mark, wordmark, app title, link to ilhs.app; phones drop the wordmark and the link). Page title, one-line intro, privacy note. From 960 px the paste box sits left (sticky) and the result cards right; below that they stack. Footer is two short lines.
+- **Layout:** one-row 56 px header (ILHS mark, wordmark, app title, link to ilhs.app; phones drop the wordmark and the link). Page title, one-line intro, privacy note. From 960 px the paste box sits left (sticky) and the result cards right; below that they stack. Footer is the shared ILHS Site Footer (Sizing Spec v2.0.0, "Site Footer"): version and build time; FOSS For All mark and copyright; info@ilhs.app and the source link. From 600 px the last two lines join, so a desktop footer is two lines.
 - **Cards:** one per certificate, titled with its number and common name, with badges for CA or leaf and the validity status. A key/value table follows; on phones each label stacks above its value.
 - **Brand:** palette `--bg`, `--surface`, `--surface-2`, `--line`, `--text`, `--muted`, `--accent` (teal), `--amber` (warnings), `--red` (errors and key warnings). `--field-line` mixes `--muted` into `--line` for field borders.
 - **Contrast:** every text pair meets WCAG AA 4.5:1 in both themes (lowest 5.43:1, light theme); field borders 3.3:1 to 4.5:1 `[TESTED]` (2026-11-26, in-browser computed colors).
